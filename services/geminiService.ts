@@ -3,38 +3,35 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { Category, Spread, CardPull, Interpretation } from "../types.ts";
 import { SPREADS } from "../constants.ts";
 
-// Helper to initialize the Gemini API client using the environment variable
-const getAI = () => {
-  return new GoogleGenAI({ apiKey: process.env.API_KEY });
-};
-
 export async function selectSpread(category: Category, question: string): Promise<Spread> {
-  const ai = getAI();
-  
-  const systemInstruction = `
-    You are an expert Tarot Spread Architect. Your goal is to design a unique and nuanced tarot spread of 2 to 4 cards that perfectly addresses the user's specific query.
-    
-    Guidelines:
-    - Analyze the user's question for hidden themes, conflicts, or specific choices.
-    - If the user is facing a choice, design a spread with comparative positions.
-    - If the user is seeking self-reflection, focus on internal vs external archetypes.
-    - If the question is vague, use a balanced structure like Past/Present/Future or Core/Tool/Outcome.
-    - The spread must have between 2 and 4 positions.
-    - Ensure position titles and descriptions are clear, modern, and grounded.
-    - Avoid spiritual jargon; use practical, coaching-oriented language.
-    
-    Architectural Inspiration (Reference these structures but adapt them to the specific question):
-    ${SPREADS.map(s => `- ${s.name}: ${s.description} (${s.positions.map(p => p.title).join(', ')})`).join('\n')}
-  `;
-
-  const userPrompt = `
-    Focus Area: ${category}
-    User's Inquiry: "${question || 'I am seeking general perspective and clarity on my current path.'}"
-    
-    Design a custom spread tailored to this inquiry.
-  `;
-
   try {
+    // Ensuring process is defined in a browser context to avoid ReferenceError
+    const env = (globalThis as any).process?.env || {};
+    const ai = new GoogleGenAI({ apiKey: env.API_KEY });
+    
+    const systemInstruction = `
+      You are an expert Tarot Spread Architect. Your goal is to design a unique and nuanced tarot spread of 2 to 4 cards that perfectly addresses the user's specific query.
+      
+      Guidelines:
+      - Analyze the user's question for hidden themes, conflicts, or specific choices.
+      - If the user is facing a choice, design a spread with comparative positions.
+      - If the user is seeking self-reflection, focus on internal vs external archetypes.
+      - If the question is vague, use a balanced structure like Past/Present/Future or Core/Tool/Outcome.
+      - The spread must have between 2 and 4 positions.
+      - Ensure position titles and descriptions are clear, modern, and grounded.
+      - Avoid spiritual jargon; use practical, coaching-oriented language.
+      
+      Architectural Inspiration (Reference these structures but adapt them to the specific question):
+      ${SPREADS.map(s => `- ${s.name}: ${s.description} (${s.positions.map(p => p.title).join(', ')})`).join('\n')}
+    `;
+
+    const userPrompt = `
+      Focus Area: ${category}
+      User's Inquiry: "${question || 'I am seeking general perspective and clarity on my current path.'}"
+      
+      Design a custom spread tailored to this inquiry.
+    `;
+
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: userPrompt,
@@ -75,6 +72,7 @@ export async function selectSpread(category: Category, question: string): Promis
     };
   } catch (error) {
     console.error("Spread Selection/Generation Error:", error);
+    // Return a default spread as fallback instead of throwing
     return SPREADS[0];
   }
 }
@@ -85,31 +83,32 @@ export async function getDetailedInterpretation(
   spread: Spread,
   pulls: CardPull[]
 ): Promise<Interpretation> {
-  const ai = getAI();
-  
-  const systemInstruction = `
-    You are a grounded, senior life coach using tarot symbolism for practical reflection.
-    Interpret the following tarot spread in the context of the user's question.
-    
-    Rules:
-    - NO future predictions, supernatural claims, or mention of 'destiny' or 'luck'.
-    - Use a grounded, calm, and practical tone.
-    - Focus on synergy: how the cards interact within this specific spread structure.
-    - Provide actionable insights that empower the user's free will.
-    - Keep language simple and accessible for beginners.
-  `;
-
-  const userPrompt = `
-    Context: ${category}
-    User Question: "${question || 'General Reflection'}"
-    Spread Name: ${spread.name}
-    Spread Intent: ${spread.description}
-    
-    Card Results:
-    ${pulls.map(p => `- Position "${p.position.title}" (${p.position.description}): Received card "${p.card.name}" (${p.card.keyword})`).join('\n')}
-  `;
-
   try {
+    const env = (globalThis as any).process?.env || {};
+    const ai = new GoogleGenAI({ apiKey: env.API_KEY });
+    
+    const systemInstruction = `
+      You are a grounded, senior life coach using tarot symbolism for practical reflection.
+      Interpret the following tarot spread in the context of the user's question.
+      
+      Rules:
+      - NO future predictions, supernatural claims, or mention of 'destiny' or 'luck'.
+      - Use a grounded, calm, and practical tone.
+      - Focus on synergy: how the cards interact within this specific spread structure.
+      - Provide actionable insights that empower the user's free will.
+      - Keep language simple and accessible for beginners.
+    `;
+
+    const userPrompt = `
+      Context: ${category}
+      User Question: "${question || 'General Reflection'}"
+      Spread Name: ${spread.name}
+      Spread Intent: ${spread.description}
+      
+      Card Results:
+      ${pulls.map(p => `- Position "${p.position.title}" (${p.position.description}): Received card "${p.card.name}" (${p.card.keyword})`).join('\n')}
+    `;
+
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: userPrompt,
@@ -139,7 +138,8 @@ export async function getDetailedInterpretation(
       }
     });
 
-    return JSON.parse(response.text || "{}");
+    const result = JSON.parse(response.text || "{}");
+    return result;
   } catch (error) {
     console.error("Detailed Interpretation Error:", error);
     return {

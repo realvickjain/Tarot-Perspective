@@ -132,7 +132,7 @@ const App: React.FC = () => {
       setStep(AppStep.SELECTION);
     } catch (error) {
       console.error("Critical Analysis Error:", error);
-      alert("Something went wrong while connecting to the intelligence layer. Please check your connection and try again.");
+      // Even if spread generation fails, we should at least let the user play with a standard spread
       setStep(AppStep.LANDING);
     }
   };
@@ -164,7 +164,6 @@ const App: React.FC = () => {
       setStep(AppStep.RESULT);
     } catch (error) {
       console.error("Interpretation Error:", error);
-      alert("Unable to finalize interpretation. Returning to card selection.");
       setStep(AppStep.SELECTION);
     }
   };
