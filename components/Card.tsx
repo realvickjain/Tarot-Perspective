@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TarotCard } from '../types';
+import { TarotCard } from '../types.ts';
 
 interface CardProps {
   card: TarotCard;

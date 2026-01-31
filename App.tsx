@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Category, TarotCard, Interpretation, AppStep, Spread, CardPull, User } from './types';
-import { CATEGORIES, DECK } from './constants';
-import { selectSpread, getDetailedInterpretation } from './services/geminiService';
-import Card from './components/Card';
+import { Category, Interpretation, AppStep, Spread, CardPull, User } from './types.ts';
+import { CATEGORIES, DECK } from './constants.ts';
+import { selectSpread, getDetailedInterpretation } from './services/geminiService.ts';
+import Card from './components/Card.tsx';
 
 /**
  * 🛠️ GOOGLE AUTH SETUP GUIDE:
@@ -72,7 +72,6 @@ const App: React.FC = () => {
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
-    // Debug helper for the user
     console.log("👉 ADD THIS TO AUTHORIZED ORIGINS IN GOOGLE CONSOLE:", window.location.origin);
   }, []);
 

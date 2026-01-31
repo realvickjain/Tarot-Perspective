@@ -1,10 +1,15 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { Category, TarotCard, Interpretation, Spread, CardPull } from "../types";
-import { SPREADS } from "../constants";
+import { Category, Spread, CardPull, Interpretation } from "../types.ts";
+import { SPREADS } from "../constants.ts";
+
+const getAI = () => {
+  const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
+  return new GoogleGenAI({ apiKey: apiKey || '' });
+};
 
 export async function selectSpread(category: Category, question: string): Promise<Spread> {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = getAI();
   
   const systemInstruction = `
     You are an expert Tarot Spread Architect. Your goal is to design a unique and nuanced tarot spread of 2 to 4 cards that perfectly addresses the user's specific query.
@@ -70,7 +75,6 @@ export async function selectSpread(category: Category, question: string): Promis
     };
   } catch (error) {
     console.error("Spread Selection/Generation Error:", error);
-    // Fallback to a standard spread if AI fails
     return SPREADS[0];
   }
 }
@@ -81,7 +85,7 @@ export async function getDetailedInterpretation(
   spread: Spread,
   pulls: CardPull[]
 ): Promise<Interpretation> {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = getAI();
   
   const systemInstruction = `
     You are a grounded, senior life coach using tarot symbolism for practical reflection.
