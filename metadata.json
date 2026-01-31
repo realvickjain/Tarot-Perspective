@@ -1,0 +1,5 @@
+{
+  "name": "Copy of Clarity Tarot",
+  "description": "A simple, user-friendly tarot MVP providing gentle guidance and grounded interpretations using the Gemini API.",
+  "requestFramePermissions": []
+}
