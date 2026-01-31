@@ -131,7 +131,8 @@ const App: React.FC = () => {
       setPulls(initialPulls);
       setStep(AppStep.SELECTION);
     } catch (error) {
-      console.error(error);
+      console.error("Critical Analysis Error:", error);
+      alert("Something went wrong while connecting to the intelligence layer. Please check your connection and try again.");
       setStep(AppStep.LANDING);
     }
   };
@@ -162,7 +163,8 @@ const App: React.FC = () => {
       setEmailStatus('sent');
       setStep(AppStep.RESULT);
     } catch (error) {
-      console.error(error);
+      console.error("Interpretation Error:", error);
+      alert("Unable to finalize interpretation. Returning to card selection.");
       setStep(AppStep.SELECTION);
     }
   };

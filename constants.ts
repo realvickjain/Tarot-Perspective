@@ -1,5 +1,5 @@
 
-import { TarotCard, Category, Spread } from './types';
+import { TarotCard, Category, Spread } from './types.ts';
 
 export const CATEGORIES: Category[] = [
   'Love',

@@ -3,9 +3,9 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { Category, Spread, CardPull, Interpretation } from "../types.ts";
 import { SPREADS } from "../constants.ts";
 
+// Helper to initialize the Gemini API client using the environment variable
 const getAI = () => {
-  const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
-  return new GoogleGenAI({ apiKey: apiKey || '' });
+  return new GoogleGenAI({ apiKey: process.env.API_KEY });
 };
 
 export async function selectSpread(category: Category, question: string): Promise<Spread> {
